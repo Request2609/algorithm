@@ -1,44 +1,46 @@
 #include <iostream>
+#include <map>
 #include <vector>
-//排列组合
 using namespace std ;
 
-void swap(int& a, int& b) {
-    int tmp = a ;
-    a = move(b) ;
-    b = move(tmp) ;
-}
-
-void pailie(vector<char>ls, int k) {
-    int len = ls.size() ;
-
-    if(k == len) {
-        int l = ls.size() ;
-        for(int i=0; i<l; i++) {
-            cout << ls[i] ;
+class Solution {
+public:
+    vector<string> Permutation(string str) {
+        vector<string>ls ;
+        getVector(ls, str, 0) ;   
+        return ls ;
+    }
+    void getVector(vector<string>&ls, string str, int k) {
+        int len = str.size() ;
+        if(len-1 == k) {
+            string ss = str ;
+            ls.push_back(ss) ;
         }
-        cout << endl ;
+        for(int i=k; i<len; i++) {
+            if(i!=k && str[i] == str[k]) {
+                continue ;
+            }
+            swap(str[i], str[k]) ;
+            getVector(ls, str, k+1) ;
+            swap(str[i], str[k]) ;
+        }
     }
 
-    for(int i=k; i<len; i++) {
-        if(i != k && ls[i] == ls[k]) {
-            continue ;
-        }
-        swap(ls[k], ls[i]) ;
-        pailie(ls, i+1) ;
-        swap(ls[k], ls[i]) ;
+    void swap(char& c1, char& c2) {
+        char c = move(c1) ;
+        c1 = move(c2) ;
+        c2 = move(c) ;
     }
-}
-
+};
 int main() {
-    vector<char>ls ;
-    while(1) {
-        char a ;
-        cin >> a ;
-        if(a == '0') break ;
-        ls.push_back(a) ;
+    string aa ;
+    cin >> aa ;
+    Solution ss ;
+    vector<string>ls = ss.Permutation(aa) ;
+    int len= ls.size();
+    for(int i=0; i<len; i++) {
+        cout << ls[i] << endl ;
     }
-    pailie(ls, 0) ;
     return 0;
 }
 
