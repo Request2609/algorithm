@@ -4,7 +4,7 @@ using namespace std ;
 
 //最大子段和
 int getMax(vector<int>ls) {
-    int sum = 0, b = 0 ;
+    int sum = INT32_MIN, b = 0 ;
     for(int i=0; i<(int)ls.size(); i++) {
         //前面的值之和大于０,继续累加后面的值
         if(b > 0) {
