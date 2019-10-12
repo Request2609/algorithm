@@ -313,7 +313,6 @@ void scanner()
     ch = fgetc(infile);
     while(ch!=EOF)
     {
- 
         i = 0;
         //以字母或者下划线开头,处理关键字或者标识符
         if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z') || ch == '_')

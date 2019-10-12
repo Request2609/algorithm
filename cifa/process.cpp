@@ -26,5 +26,5 @@ int main() {
         cout << __LINE__ << "     " << __FILE__ << endl ;
         return -1 ;
     }  
-   
+   cout << "分析结束" << endl ;
 }

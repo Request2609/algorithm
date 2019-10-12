@@ -45,6 +45,7 @@
 #define FLOAT_VAL 53 //浮点数常量
 #define STRING_VAL 54 //双精度浮点数常量
 #define MACRO_VAL 55 //宏常量
+#define NUM_VAL 57
 #define CONSTANT_DESC "常量"
  
 //运算符
