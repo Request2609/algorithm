@@ -102,9 +102,9 @@ void createNewNode(char * content,char *descirbe,int type,int addr,int line)
     temp->addr = addr;
     temp->line = line;
     temp->next = NULL;
- 
     p->next = temp;
 }
+
 void createNewError(char * content,char *descirbe,int type,int line)
 {
     ErrorNode * p = errorHead;
@@ -155,13 +155,13 @@ void printNodeLink()
 {
     NormalNode * p = normalHead;
     p = p->next;
-    cout<<"************************************分析表******************************"<<endl<<endl;
-    cout<<setw(30)<<"内容"<<setw(10)<<"描述"<<"\t"<<"种别码"<<"\t"<<"地址"<<"\t"<<"行号"<<endl;
+    cout<<"分析表:"<<endl<<endl;
+    cout<<setw(30)<<"内容"<<setw(10)<<"描述"<<"\t"<<"种别码"<<"\t"<<"\t"<<"行号"<<endl;
     while(p!=NULL)
     {
         if(p->type == IDENTIFER)
         {
-            cout<<setw(30)<<p->content<<setw(10)<<p->describe<<"\t"<<p->type<<"\t"<<p->addr<<"\t"<<p->line<<endl;
+            cout<<setw(30)<<p->content<<setw(10)<<p->describe<<"\t"<<p->type<<"\t"<<"\t"<<p->line<<endl;
         }
         else
         {
@@ -186,7 +186,7 @@ void printErrorLink()
 {
     ErrorNode * p = errorHead;
     p = p->next;
-    cout<<"************************************错误表******************************"<<endl<<endl;
+    cout<<"错误表:"<<endl<<endl;
     cout<<setw(10)<<"内容"<<setw(30)<<"描述"<<"\t"<<"类型"<<"\t"<<"行号"<<endl;
     while(p!=NULL)
     {
@@ -200,11 +200,11 @@ void printIdentLink()
 {
     IdentiferNode * p = idenHead;
     p = p->next;
-    cout<<"************************************标志符表******************************"<<endl<<endl;
-    cout<<setw(30)<<"内容"<<setw(10)<<"描述"<<"\t"<<"种别码"<<"\t"<<"地址"<<"\t"<<"行号"<<endl;
+    cout<<"标志符表:"<<endl<<endl;
+    cout<<setw(30)<<"内容"<<setw(10)<<"描述"<<"\t"<<"种别码"<<"\t"<<"\t"<<"行号"<<endl;
     while(p!=NULL)
     {
-        cout<<setw(30)<<p->content<<setw(10)<<p->describe<<"\t"<<p->type<<"\t"<<p->addr<<"\t"<<p->line<<endl;
+        cout<<setw(30)<<p->content<<setw(10)<<p->describe<<"\t"<<p->type<<"\t"<<"\t"<<p->line<<endl;
         p = p->next;
     }
     cout<<endl<<endl;
@@ -279,6 +279,7 @@ void close()
     delete normalHead;
 }
  
+//判断是否为关键字
 int seekKey(char * word)
 {
     for(int i=0; i<32; i++)
@@ -317,26 +318,31 @@ void scanner()
         //以字母或者下划线开头,处理关键字或者标识符
         if((ch>='A' && ch<='Z') || (ch>='a' && ch<='z') || ch == '_')
         {
+            //循环接收文件内容
             while((ch>='A' && ch<='Z')||(ch>='a' && ch<='z')||(ch>='0' && ch<='9') || ch == '_')
             {
                 array[i++] = ch;
                 ch = fgetc(infile);
             }
+
             word = new char[i+1];
             memcpy(word,array,i);
             word[i] = '\0';
             int seekTemp = seekKey(word);
             if(seekTemp!=IDENTIFER)
             {
+                //是关键字
                 createNewNode(word,KEY_DESC,seekTemp,-1,line);
             }
             else
             {
+                //标识符
                 int addr_tmp = createNewIden(word,IDENTIFER_DESC,seekTemp,-1,line);
                 createNewNode(word,IDENTIFER_DESC,seekTemp,addr_tmp,line);
             }
             fseek(infile,-1L,SEEK_CUR);//向后回退一位
         }
+
         //以数字开头，处理数字
         else if(ch >='0' && ch<='9')
         {
@@ -353,6 +359,7 @@ void scanner()
             {
                 flag2 = 1;
                 array[i++] = ch;
+
                 ch = fgetc(infile);
                 if(ch>='0' && ch<='9')
                 {
@@ -366,8 +373,7 @@ void scanner()
                 {
                     flag = 1;
                 }
- 
-                //处理Double
+                //处理Double，数字的话可能是10的幂次方1e10或者1e+10的情况
                 if(ch == 'E' || ch == 'e')
                 {
                     array[i++] = ch;
@@ -389,19 +395,23 @@ void scanner()
                 }
  
             }
+
             word = new char[i+1];
             memcpy(word,array,i);
             word[i] = '\0';
+            //表示float的数字不合法
             if(flag == 1)
             {
                 createNewError(word,FLOAT_ERROR,FLOAT_ERROR_NUM,line);
             }
+            //表示double的数字不合法
             else if(flag == 2)
             {
                 createNewError(word,DOUBLE_ERROR,DOUBLE_ERROR_NUM,line);
             }
             else
             {
+                //常量
                 if(flag2 == 0)
                 {
                     createNewNode(word,CONSTANT_DESC,INT_VAL,-1,line);
@@ -413,7 +423,7 @@ void scanner()
             }
             fseek(infile,-1L,SEEK_CUR);//向后回退一位
         }
-        //以"/"开头
+        //以"/"开头，运算符号，或者限定符号
         else if(ch == '/')
         {
             ch = fgetc(infile);
@@ -485,6 +495,7 @@ void scanner()
             createNewNode("\"",CLE_OPE_DESC,DOU_QUE,-1,line);
             ch = fgetc(infile);
             i = 0;
+            //将常量字符串保存起来
             while(ch!='"')
             {
                 array[i++] = ch;
@@ -495,6 +506,7 @@ void scanner()
                 ch = fgetc(infile);
                 if(ch == EOF)
                 {
+                    //退不出去，表示不合法，创建错误
                     createNewError(_NULL,STRING_ERROR,STRING_ERROR_NUM,line);
                     return;
                 }
@@ -502,6 +514,7 @@ void scanner()
             word = new char[i+1];
             memcpy(word,array,i);
             word[i] = '\0';
+            //创建新的常量对象
             createNewNode(word,CONSTANT_DESC,STRING_VAL,-1,line);
             createNewNode("\"",CLE_OPE_DESC,DOU_QUE,-1,line);
         }
@@ -538,6 +551,7 @@ void scanner()
                 line++;
             }
         }
+        //处理头文件
         else
         {
             if(ch == EOF)
@@ -556,7 +570,6 @@ void scanner()
                 memcpy(word,array,i);
                 word[i] = '\0';
                 preProcess(word,line);
- 
                 fseek(infile,-1L,SEEK_CUR);//向后回退一位
             }
             //处理-开头的运算符
@@ -949,8 +962,8 @@ int main()
     initNode();
     scanner();
     BraMappingError();
+    printErrorLink() ;
     printNodeLink();
-    printErrorLink();
     printIdentLink();
     close();
     return 0;

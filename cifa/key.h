@@ -108,7 +108,7 @@
  
 #define HEADER 130 //头文件
 #define HEADER_DESC "头文件"
- 
+
 //错误类型
 #define FLOAT_ERROR "float表示错误"
 #define FLOAT_ERROR_NUM 1
