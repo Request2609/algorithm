@@ -17,15 +17,14 @@ public:
         tmp.push_back(start) ;
         int flag =0  ;
         while(!tmp.empty()&&start < end) {
-            cout << start <<  "      " << end << "       " << s << "       " << tmp.size()<< endl ;
             if(s == sum) {
                 vector<int>ss = tmp ;
                 print(tmp) ;
                 if(ss.size() != 1)
                     ls.push_back(ss) ;
+                if(flag == 1) { end++ ; }
                 s+=end ;
                 tmp.push_back(end) ;
-                cout << "jia--->" << end << endl ;
                 flag =1  ;
             }
             else if(s < sum) {
